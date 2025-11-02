@@ -8,20 +8,7 @@
     "dev": "nodemon server.js",
     "seed": "node utils/seed.js"
   },
-  "keywords": [
-    "express",
-    "mongodb",
-    "rest-api"
-  ],
+  "keywords": ["express", "mongodb", "rest-api"],
   "author": "Your Name",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongodb": "^6.20.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+  "license": "ISC"
 }
