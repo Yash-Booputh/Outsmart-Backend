@@ -5,7 +5,6 @@ const path = require('path');
 const { connectDB } = require('./config/db');
 const logger = require('./middleware/logger');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
-const searchRouter = require('./routes/search');
 
 // Import routes
 const lessonsRouter = require('./routes/lessons');
