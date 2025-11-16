@@ -4,8 +4,8 @@ const { getDB } = require('../config/db');
 const router = express.Router();
 
 /**
- * GET /api/search
- * Search lessons by query parameter (4%)
+ * GET /api/search?q=query
+ * Search lessons across multiple fields (4%)
  * Example: /api/search?q=math
  */
 router.get('/', async function(req, res, next) {
@@ -13,27 +13,49 @@ router.get('/', async function(req, res, next) {
         const db = getDB();
         const query = req.query.q;
         
-        if (!query) {
+        // Validate query parameter
+        if (!query || query.trim() === '') {
             return res.status(400).json({
                 error: 'Query parameter "q" is required'
             });
         }
         
-        // Create case-insensitive regex for searching
-        const searchRegex = new RegExp(query, 'i');
+        const searchTerm = query.trim();
+        console.log(`Searching for: "${searchTerm}"`);
         
-        // Search across multiple fields
-        const lessons = await db.collection('lessons').find({
+        // Create case-insensitive regex for text searching
+        const searchRegex = new RegExp(searchTerm, 'i');
+        
+        // Parse as number if possible
+        const numericValue = parseInt(searchTerm);
+        const isNumeric = !isNaN(numericValue);
+        
+        // Build search query across multiple fields
+        const searchQuery = {
             $or: [
                 { subject: searchRegex },
-                { location: searchRegex },
-                { price: isNaN(query) ? null : parseInt(query) },
-                { spaces: isNaN(query) ? null : parseInt(query) }
+                { location: searchRegex }
             ]
-        }).toArray();
+        };
+        
+        // Add numeric searches if query is a number
+        if (isNumeric) {
+            searchQuery.$or.push(
+                { price: numericValue },
+                { spaces: numericValue }
+            );
+        }
+        
+        // Execute search
+        const lessons = await db.collection('lessons')
+            .find(searchQuery)
+            .toArray();
+        
+        console.log(`Found ${lessons.length} lessons matching "${searchTerm}"`);
         
         res.json(lessons);
     } catch (error) {
+        console.error('Error searching lessons:', error);
         next(error);
     }
 });
