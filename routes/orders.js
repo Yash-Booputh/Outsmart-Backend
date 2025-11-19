@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * POST /api/orders
- * Creates a new order (4%)
+ * Creates a new order with complete lesson details (4%)
  */
 router.post('/', async function(req, res, next) {
     try {
@@ -39,7 +39,6 @@ router.post('/', async function(req, res, next) {
         }
         
         // Convert lesson IDs to ObjectId
-        const { ObjectId } = require('mongodb');
         const convertedLessonIDs = lessonIDs.map(function(id) {
             if (!ObjectId.isValid(id)) {
                 throw new Error('Invalid lesson ID format: ' + id);
@@ -47,23 +46,32 @@ router.post('/', async function(req, res, next) {
             return new ObjectId(id);
         });
         
-        // **NEW: Fetch lesson names from database**
-        const lessons = await db.collection('lessons')
+        // Fetch complete lesson details from database
+        const lessonsFromDB = await db.collection('lessons')
             .find({ _id: { $in: convertedLessonIDs } })
             .toArray();
         
-        // Extract lesson subjects (names)
-        const lessonNames = lessons.map(function(lesson) {
-            return lesson.subject;
+        // Build detailed lessons array with order information
+        const detailedLessons = lessonsFromDB.map(function(lesson, index) {
+            // Find the corresponding space count for this lesson
+            const lessonIndex = convertedLessonIDs.findIndex(function(id) {
+                return id.equals(lesson._id);
+            });
+            
+            return {
+                lessonID: lesson._id,
+                subject: lesson.subject,
+                location: lesson.location,
+                price: lesson.price,
+                spacesOrdered: spaces[lessonIndex]
+            };
         });
         
-        // Create order object
+        // Create order object with full details
         const order = {
             name: name,
             phone: phone,
-            lessonIDs: convertedLessonIDs,
-            lessonNames: lessonNames,        // **NEW: Added lesson names**
-            spaces: spaces,
+            lessons: detailedLessons,
             orderDate: new Date(),
             status: 'confirmed'
         };
@@ -72,7 +80,8 @@ router.post('/', async function(req, res, next) {
         const result = await db.collection('orders').insertOne(order);
         
         console.log(`Order created successfully: ${result.insertedId}`);
-        console.log(`Customer: ${name}, Phone: ${phone}, Lessons: ${lessonNames.join(', ')}`);
+        console.log(`Customer: ${name}, Phone: ${phone}`);
+        console.log(`Lessons: ${detailedLessons.map(l => l.subject).join(', ')}`);
         
         res.status(201).json({
             message: 'Order created successfully',
@@ -90,15 +99,48 @@ router.post('/', async function(req, res, next) {
 
 /**
  * GET /api/orders
- * Returns all orders (optional - for testing)
+ * Returns all orders (optional - for testing and demonstration)
  */
 router.get('/', async function(req, res, next) {
     try {
         const db = getDB();
-        const orders = await db.collection('orders').find({}).toArray();
+        const orders = await db.collection('orders')
+            .find({})
+            .sort({ orderDate: -1 })
+            .toArray();
         
+        console.log(`Retrieved ${orders.length} orders from database`);
         res.json(orders);
     } catch (error) {
+        console.error('Error fetching orders:', error);
+        next(error);
+    }
+});
+
+/**
+ * GET /api/orders/:id
+ * Returns a single order by ID (optional - for testing)
+ */
+router.get('/:id', async function(req, res, next) {
+    try {
+        const db = getDB();
+        const orderId = req.params.id;
+        
+        if (!ObjectId.isValid(orderId)) {
+            return res.status(400).json({ error: 'Invalid order ID' });
+        }
+        
+        const order = await db.collection('orders').findOne({
+            _id: new ObjectId(orderId)
+        });
+        
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        
+        res.json(order);
+    } catch (error) {
+        console.error('Error fetching order:', error);
         next(error);
     }
 });
