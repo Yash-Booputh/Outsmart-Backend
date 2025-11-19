@@ -51,21 +51,26 @@ router.post('/', async function(req, res, next) {
             .find({ _id: { $in: convertedLessonIDs } })
             .toArray();
         
-        // Build detailed lessons array with order information
-        const detailedLessons = lessonsFromDB.map(function(lesson, index) {
-            // Find the corresponding space count for this lesson
-            const lessonIndex = convertedLessonIDs.findIndex(function(id) {
-                return id.equals(lesson._id);
+        // Build detailed lessons array - FIXED LOGIC
+        const detailedLessons = [];
+        for (let i = 0; i < convertedLessonIDs.length; i++) {
+            const lessonId = convertedLessonIDs[i];
+            const lesson = lessonsFromDB.find(function(l) {
+                return l._id.equals(lessonId);
             });
             
-            return {
+            if (!lesson) {
+                throw new Error('Lesson not found: ' + lessonId);
+            }
+            
+            detailedLessons.push({
                 lessonID: lesson._id,
                 subject: lesson.subject,
                 location: lesson.location,
                 price: lesson.price,
-                spacesOrdered: spaces[lessonIndex]
-            };
-        });
+                spacesOrdered: spaces[i]
+            });
+        }
         
         // Create order object with full details
         const order = {
@@ -92,6 +97,9 @@ router.post('/', async function(req, res, next) {
         console.error('Error creating order:', error);
         if (error.message.includes('Invalid lesson ID')) {
             return res.status(400).json({ error: error.message });
+        }
+        if (error.message.includes('Lesson not found')) {
+            return res.status(404).json({ error: error.message });
         }
         next(error);
     }
