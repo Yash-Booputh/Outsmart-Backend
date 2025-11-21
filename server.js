@@ -23,15 +23,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
 // Static files middleware (4%)
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+// Serves lesson images from public/images folder
+app.use('/images', express.static(path.join(__dirname, 'public/images'), {
+    fallthrough: false // Return 404 if file not found
+}));
 
-// Handle static file errors
+// Handle static file errors - returns error message if image doesn't exist
 app.use('/images', function(err, req, res, next) {
-    if (err) {
-        res.status(404).json({ error: 'Image not found' });
-    } else {
-        next();
-    }
+    console.log(`[IMAGE ERROR] ${req.url} - File not found`);
+    res.status(404).json({
+        error: 'Image not found',
+        requestedImage: req.url
+    });
 });
 
 // Root route
