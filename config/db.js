@@ -16,10 +16,10 @@ async function connectDB() {
         
         db = client.db('outsmart');
         
-        console.log('✓ Connected to MongoDB Atlas');
+        console.log('Connected to MongoDB Atlas');
         return db;
     } catch (error) {
-        console.error('✗ MongoDB connection error:', error.message);
+        console.error('MongoDB connection error:', error.message);
         process.exit(1);
     }
 }
@@ -34,7 +34,7 @@ function getDB() {
 async function closeDB() {
     if (client) {
         await client.close();
-        console.log('✓ MongoDB connection closed');
+        console.log('MongoDB connection closed');
     }
 }
 
