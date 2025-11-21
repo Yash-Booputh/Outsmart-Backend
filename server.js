@@ -5,6 +5,7 @@ const path = require('path');
 const { connectDB } = require('./config/db');
 const logger = require('./middleware/logger');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { imageMiddleware } = require('./middleware/static-files');
 
 // Import routes
 const lessonsRouter = require('./routes/lessons');
@@ -24,18 +25,8 @@ app.use(logger);
 
 // Static files middleware (4%)
 // Serves lesson images from public/images folder
-app.use('/images', express.static(path.join(__dirname, 'public/images'), {
-    fallthrough: false // Return 404 if file not found
-}));
-
-// Handle static file errors - returns error message if image doesn't exist
-app.use('/images', function(err, req, res, next) {
-    console.log(`[IMAGE ERROR] ${req.url} - File not found`);
-    res.status(404).json({
-        error: 'Image not found',
-        requestedImage: req.url
-    });
-});
+// Returns error message if image doesn't exist
+app.use('/images', imageMiddleware);
 
 // Root route
 app.get('/', function(req, res) {
