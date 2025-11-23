@@ -4,10 +4,8 @@ const { getDB } = require('../config/db');
 
 const router = express.Router();
 
-/**
- * GET /api/lessons
- * Returns all lessons from MongoDB (3%)
- */
+
+ // GET /api/lessons
 router.get('/', async function(req, res, next) {
     try {
         const db = getDB();
@@ -19,11 +17,8 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-/**
- * PUT /api/lessons/:id
- * Updates a lesson (especially spaces) (5%)
- * Can update any attribute, not just increment/decrement
- */
+ // PUT /api/lessons/:id
+ // Can update any attribute, not just increment/decrement spaces
 router.put('/:id', async function(req, res, next) {
     try {
         const db = getDB();

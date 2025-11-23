@@ -4,11 +4,9 @@ const { getDB } = require('../config/db');
 
 const router = express.Router();
 
-/**
- * POST /api/orders
- * Creates a new order with complete lesson details (4%)
- */
-router.post('/', async function(req, res, next) {
+ // POST /api/orders
+ // Creates a new order with complete lesson details
+router.post('/', async function(req, res, next) { //triggered when the frontend sends a checkout form
     try {
         const db = getDB();
         const { name, phone, lessonIDs, spaces } = req.body;
@@ -51,7 +49,7 @@ router.post('/', async function(req, res, next) {
             .find({ _id: { $in: convertedLessonIDs } })
             .toArray();
         
-        // Build detailed lessons array - FIXED LOGIC
+        // Build detailed lessons array
         const detailedLessons = [];
         for (let i = 0; i < convertedLessonIDs.length; i++) {
             const lessonId = convertedLessonIDs[i];
@@ -105,10 +103,10 @@ router.post('/', async function(req, res, next) {
     }
 });
 
-/**
- * GET /api/orders
- * Returns all orders (optional - for testing and demonstration)
- */
+
+ // GET /api/orders
+ // Returns all orders
+
 router.get('/', async function(req, res, next) {
     try {
         const db = getDB();
@@ -125,10 +123,9 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-/**
- * GET /api/orders/:id
- * Returns a single order by ID (optional - for testing)
- */
+
+ // GET /api/orders/:id
+ // Returns a single order by ID
 router.get('/:id', async function(req, res, next) {
     try {
         const db = getDB();

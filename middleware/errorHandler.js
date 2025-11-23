@@ -1,7 +1,5 @@
-/**
- * Error Handler Middleware
- * Handles errors and sends appropriate responses
- */
+// Error Handler Middleware
+// Handles errors and sends appropriate responses
 function errorHandler(err, req, res, next) {
     console.error('Error:', err.message);
     console.error('Stack:', err.stack);
@@ -15,9 +13,8 @@ function errorHandler(err, req, res, next) {
     });
 }
 
-/**
- * 404 Not Found Handler
- */
+
+// 404 Not Found Handler
 function notFoundHandler(req, res, next) {
     res.status(404).json({
         error: 'Route not found',

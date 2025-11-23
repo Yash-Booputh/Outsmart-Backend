@@ -12,6 +12,7 @@ const lessonsRouter = require('./routes/lessons');
 const ordersRouter = require('./routes/orders');
 const searchRouter = require('./routes/search');
 
+// Creates an Express app instance.
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -20,12 +21,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logger middleware (4%)
+// Logger middleware 
 app.use(logger);
 
-// Static files middleware (4%)
-// Serves lesson images from public/images folder
-// Returns error message if image doesn't exist
+// Static files middleware 
 app.use('/images', imageMiddleware);
 
 // Root route
@@ -56,8 +55,8 @@ app.use(errorHandler);
 connectDB()
     .then(function() {
         app.listen(port, function() {
-            console.log('✓ Server running on port ' + port);
-            console.log('✓ Environment: ' + (process.env.NODE_ENV || 'development'));
+            console.log('Server running on port ' + port);
+            console.log('Environment: ' + (process.env.NODE_ENV || 'development'));
         });
     })
     .catch(function(error) {

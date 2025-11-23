@@ -3,11 +3,9 @@ const { getDB } = require('../config/db');
 
 const router = express.Router();
 
-/**
- * GET /api/search?q=query
- * Search lessons across multiple fields (4%)
- * Example: /api/search?q=math
- */
+
+ // GET /api/search?q=query
+ // Search lessons across multiple fields
 router.get('/', async function(req, res, next) {
     try {
         const db = getDB();
