@@ -72,6 +72,10 @@ backend/
 ```
 
 ## Links
-- **GitHub Repository:** https://github.com/Yash-Booputh/Outsmart-Backend.git
-- **Render.com API (All Lessons):** https://outsmart-backend-osm4.onrender.com/api/lessons
-- **Frontend (GitHub Pages):** https://yash-booputh.github.io/Outsmart-Frontend/
+- **GitHub Frontend Repository:** https://github.com/Yash-Booputh/Outsmart-Frontend.git
+
+- **GitHub Backend Repository:** https://github.com/Yash-Booputh/Outsmart-Backend.git
+
+- **Live Demo (GitHub Pages):** https://yash-booputh.github.io/Outsmart-Frontend/
+
+- **Backend API Render.com:** https://outsmart-backend-osm4.onrender.com/api/lessons
